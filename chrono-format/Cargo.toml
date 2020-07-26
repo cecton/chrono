@@ -1,0 +1,34 @@
+[package]
+name = "chrono-format"
+version = "0.4.13"
+authors = [
+    "Kang Seonghoon <public+rust@mearie.org>",
+    "Brandon W Maister <quodlibetor@gmail.com>",
+]
+
+description = "Date and time library for Rust"
+homepage = "https://github.com/chronotope/chrono"
+documentation = "https://docs.rs/chrono/"
+repository = "https://github.com/chronotope/chrono"
+keywords = ["date", "time", "calendar"]
+categories = ["date-and-time"]
+readme = "README.md"
+license = "MIT/Apache-2.0"
+include = ["lib.rs", "src/**/*.rs", "LICENSE.txt"]
+
+[lib]
+name = "chrono_format"
+
+[features]
+
+[dependencies]
+
+[target.'cfg(all(target_arch = "wasm32", not(any(target_os = "emscripten", target_os = "wasi"))))'.dependencies]
+
+[dev-dependencies]
+
+[target.'cfg(all(target_arch = "wasm32", not(any(target_os = "emscripten", target_os = "wasi"))))'.dev-dependencies]
+
+[package.metadata.docs.rs]
+
+[package.metadata.playground]
