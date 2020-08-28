@@ -174,9 +174,9 @@ use super::{Fixed, InternalFixed, InternalInternal, Item, Numeric, Pad};
 
 type Fmt<'a> = &'static [Item<'static>];
 
-static D_FMT: &'static [Item<'static>] =
+const D_FMT: &'static [Item<'static>] =
     &[num0!(Month), lit!("/"), num0!(Day), lit!("/"), num0!(YearMod100)];
-static D_T_FMT: &'static [Item<'static>] = &[
+const D_T_FMT: &'static [Item<'static>] = &[
     fix!(ShortWeekdayName),
     sp!(" "),
     fix!(ShortMonthName),
@@ -191,8 +191,15 @@ static D_T_FMT: &'static [Item<'static>] = &[
     sp!(" "),
     num0!(Year),
 ];
-static T_FMT: &'static [Item<'static>] =
+const T_FMT: &'static [Item<'static>] =
     &[num0!(Hour), lit!(":"), num0!(Minute), lit!(":"), num0!(Second)];
+const FMT_NONE: &'static [Item<'static>; 0] = &[];
+
+#[cfg(feature = "unstable-locales")]
+const fn make_localized_formats() -> &'static [Fmt<'static>] {
+    &[
+    ]
+}
 
 /// Parsing iterator for `strftime`-like format strings.
 #[derive(Clone, Debug)]
@@ -211,9 +218,11 @@ pub struct StrftimeItems<'a> {
     t_fmt: Fmt<'a>,
 }
 
+const HAVE_ALTERNATES: &'static str = "z";
+
 impl<'a> StrftimeItems<'a> {
     /// Creates a new parsing iterator from the `strftime`-like format string.
-    pub fn new(s: &'a str) -> StrftimeItems<'a> {
+    pub const fn new(s: &'a str) -> StrftimeItems<'a> {
         Self::with_remainer(s)
     }
 
@@ -233,7 +242,6 @@ impl<'a> StrftimeItems<'a> {
             t_fmt: t_fmt,
         }
         */
-        static FMT_NONE: &'static [Item<'static>; 0] = &[];
 
         StrftimeItems {
             remainder: s,
@@ -244,9 +252,7 @@ impl<'a> StrftimeItems<'a> {
         }
     }
 
-    fn with_remainer(s: &'a str) -> StrftimeItems<'a> {
-        static FMT_NONE: &'static [Item<'static>; 0] = &[];
-
+    const fn with_remainer(s: &'a str) -> StrftimeItems<'a> {
         StrftimeItems {
             remainder: s,
             recons: FMT_NONE,
@@ -255,14 +261,8 @@ impl<'a> StrftimeItems<'a> {
             t_fmt: T_FMT,
         }
     }
-}
 
-const HAVE_ALTERNATES: &'static str = "z";
-
-impl<'a> Iterator for StrftimeItems<'a> {
-    type Item = Item<'a>;
-
-    fn next(&mut self) -> Option<Item<'a>> {
+    const fn iter_next(&mut self) -> Option<Item<'a>> {
         // we have some reconstructed items to return
         if !self.recons.is_empty() {
             let item;
@@ -454,6 +454,14 @@ impl<'a> Iterator for StrftimeItems<'a> {
                 Some(item)
             }
         }
+    }
+}
+
+impl<'a> Iterator for StrftimeItems<'a> {
+    type Item = Item<'a>;
+
+    fn next(&mut self) -> Option<Item<'a>> {
+        self.iter_next()
     }
 }
 

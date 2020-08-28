@@ -53,6 +53,9 @@ num-iter = { version = "0.1.35", default-features = false }
 criterion = { version = "0.3" }
 doc-comment = { version = "0.3" }
 
+[build-dependencies]
+pure-rust-locales = { version = "0.5.2", optional = true, git = "https://github.com/cecton/pure-rust-locales.git", branch = "locales-consts" }
+
 [target.'cfg(all(target_arch = "wasm32", not(any(target_os = "emscripten", target_os = "wasi"))))'.dev-dependencies]
 wasm-bindgen-test = "0.3"
 
